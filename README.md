@@ -4,7 +4,7 @@ Segmentation attacks target weaknesses in network segmentation by bypassing isol
 
 🔹 Layer 2 (Data Link Layer) Segmentation Attacks
 Layer 2 attacks often exploit Ethernet or switching technologies, particularly in VLAN-based networks.
-
+```
 1. ARP Poisoning (ARP Spoofing)
 Goal: Redirect traffic by spoofing MAC addresses in the ARP table.
 
@@ -53,10 +53,10 @@ Goal: Overwhelm or spoof DHCP to assign malicious configurations.
 Impact: Redirect traffic, deny legitimate leases.
 
 Countermeasure: DHCP Snooping.
-
+```
 🔸 Layer 3 (Network Layer) Segmentation Attacks
 Layer 3 attacks exploit routing and IP-based segmentation.
-
+```
 1. IP Spoofing
 Goal: Send packets with a forged IP to bypass ACLs or impersonate.
 
@@ -84,8 +84,10 @@ Goal: Send large volumes of UDP packets to random ports.
 Impact: Resource consumption and potential DoS.
 
 Countermeasure: Rate-limiting, connection tracking.
-
+```
 📋 Summary
+```
 Layer	Attack Type	Primary Objective	Typical Defense
 L2	ARP/MAC/DTP/VLAN attacks	Bypass switching & VLAN boundaries	Port security, ACLs, DAI, disable DTP
 L3	IP/ICMP/TCP/UDP spoofing	Evade routing rules & overload	Packet filtering, firewalls, anti-DoS tools
+```
