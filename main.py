@@ -4,8 +4,6 @@ from tabulate import tabulate
 import os
 import datetime
 from docx import Document
-from docx.shared import Inches
-
 
 def run_script(script_name, args=[]):
     script_path = os.path.join("core", script_name)
@@ -14,7 +12,6 @@ def run_script(script_name, args=[]):
         return result.stdout.strip()
     except Exception as e:
         return f"Error running {script_name}: {str(e)}"
-
 
 layer2_attacks = {
     "1": ("arp_poisoning.py", "ARP Poisoning Attack"),
@@ -33,23 +30,19 @@ layer3_attacks = {
     "4": ("tcp_syn_flood.py", "TCP SYN Flood Attack")
 }
 
-
-def save_report_to_docx(headers, data, filename):
+def save_report_vertical_table(headers, values, filename):
     doc = Document()
     doc.add_heading("Segmentation Testing Report", 0)
 
-    table = doc.add_table(rows=1, cols=len(headers))
-    hdr_cells = table.rows[0].cells
-    for i, header in enumerate(headers):
-        hdr_cells[i].text = header
+    table = doc.add_table(rows=0, cols=2)
+    table.style = 'Light Grid'
 
-    for row in data:
+    for header, value in zip(headers, values):
         row_cells = table.add_row().cells
-        for i, item in enumerate(row):
-            row_cells[i].text = str(item)
+        row_cells[0].text = f"{header}:"
+        row_cells[1].text = value
 
     doc.save(filename)
-
 
 def main():
     print("Select the attack layer:")
@@ -72,15 +65,23 @@ def main():
         print(f"{key}. {desc}")
 
     choice = input("Enter the number of the attack: ").strip()
-    target_ip = input("Enter target IP address (if applicable): ").strip()
+    target_ip = input("Enter target IP address: ").strip()
+    source_ip = input("Enter source/spoofed IP address (if applicable): ").strip()
 
     if choice in selected_attacks:
         script_name, issue = selected_attacks[choice]
-        output = run_script(script_name, [target_ip])
+        output = run_script(script_name, [target_ip, source_ip])
 
-        report_data = [[
-            issue,
+        headers = [
+            "Targeted IP", "Source IP", "Method used", "Port Used", "Vulnerability details",
+            "Attack Vector", "Attack Complexity", "Privileges Required", "User Interaction",
+            "Scope", "Confidentiality", "Integrity", "Availability", "Severity-Rating",
+            "Business impact", "Remediation", "Proof of Concept"
+        ]
+
+        values = [
             target_ip,
+            source_ip,
             "Scapy/Custom",
             "N/A",
             layer_type,
@@ -94,28 +95,18 @@ def main():
             "Medium",
             "Possible lateral movement, traffic capture",
             "Use segmentation, filtering, and monitoring",
+            "",
             output
-        ]]
-
-        headers = [
-            "Issue Name", "Targeted IP", "Method used", "Port Used", "Vulnerability details",
-            "Attack Vector", "Attack Complexity", "Privileges Required", "User Interaction",
-            "Scope", "Confidentiality", "Integrity", "Availability", "Severity-Rating",
-            "Business impact", "Remediation", "Proof of Concept"
         ]
-
-        print("\n=== Attack Report ===")
-        print(tabulate(report_data, headers=headers, tablefmt="grid"))
 
         os.makedirs("output", exist_ok=True)
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         docx_filename = os.path.join("output", f"segmentation_report_{timestamp}.docx")
-        save_report_to_docx(headers, report_data, docx_filename)
+        save_report_vertical_table(headers, values, docx_filename)
         print(f"\n[+] Report saved to: {docx_filename}")
 
     else:
         print("Invalid choice.")
-
 
 if __name__ == '__main__':
     main()
