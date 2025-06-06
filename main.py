@@ -1,10 +1,12 @@
 # main.py
 import subprocess
 from tabulate import tabulate
+import os
 
 def run_script(script_name, args=[]):
+    script_path = os.path.join("core", script_name)
     try:
-        result = subprocess.run(['python3', script_name] + args, capture_output=True, text=True)
+        result = subprocess.run(['python3', script_path] + args, capture_output=True, text=True)
         return result.stdout.strip()
     except Exception as e:
         return f"Error running {script_name}: {str(e)}"
@@ -31,7 +33,6 @@ def main():
         script_name, issue = attack_scripts[choice]
         output = run_script(script_name, [target_ip])
 
-        # Dummy static report format for now (can be enhanced to parse output)
         report_data = [[
             issue,
             target_ip,
